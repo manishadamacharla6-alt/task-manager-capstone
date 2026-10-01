@@ -1,158 +1,127 @@
+const API_URL = "https://jsonplaceholder.typicode.com/todos";
 
-import React, { useEffect, useState } from "react";
+const taskInput = document.getElementById("taskInput");
+const addTaskBtn = document.getElementById("addTaskBtn");
+const taskList = document.getElementById("taskList");
+const loading = document.getElementById("loading");
 
-function App() {
-  const [tasks, setTasks] = useState([]);
-  const [title, setTitle] = useState("");
-  const [loading, setLoading] = useState(false);
+let tasks = [];
 
-  const API_URL = "https://jsonplaceholder.typicode.com/todos";
-
-  useEffect(() => {
-    fetch(`${API_URL}?_limit=10`)
-      .then((response) => response.json())
-      .then((data) => setTasks(data))
-      .catch((error) => console.error("Error:", error));
-  }, []);
-
-  const addTask = async () => {
-    if (!title.trim()) {
-      alert("Please enter a task");
-      return;
-    }
-
-    setLoading(true);
-
+// Fetch tasks from REST API
+async function loadTasks() {
     try {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: title,
-          completed: false,
-          userId: 1,
-        }),
-      });
+        const response = await fetch(`${API_URL}?_limit=10`);
 
-      const newTask = await response.json();
+        if (!response.ok) {
+            throw new Error("Failed to fetch tasks");
+        }
 
-      setTasks((currentTasks) => [
-        {
-          ...newTask,
-          id: Date.now(),
-        },
-        ...currentTasks,
-      ]);
+        tasks = await response.json();
 
-      setTitle("");
+        loading.style.display = "none";
+        displayTasks();
     } catch (error) {
-      console.error("Error:", error);
-    } finally {
-      setLoading(false);
+        loading.textContent = "Unable to load tasks.";
+        console.error(error);
     }
-  };
-
-  const toggleTask = (id) => {
-    setTasks((currentTasks) =>
-      currentTasks.map((task) =>
-        task.id === id
-          ? { ...task, completed: !task.completed }
-          : task
-      )
-    );
-  };
-
-  const deleteTask = (id) => {
-    setTasks((currentTasks) =>
-      currentTasks.filter((task) => task.id !== id)
-    );
-  };
-
-  return (
-    <main style={styles.container}>
-      <h1>Task Manager</h1>
-
-      <div style={styles.inputArea}>
-        <input
-          type="text"
-          placeholder="Enter a new task"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-
-        <button onClick={addTask} disabled={loading}>
-          {loading ? "Adding..." : "Add Task"}
-        </button>
-      </div>
-
-      <section>
-        <h2>Tasks</h2>
-
-        {tasks.length === 0 ? (
-          <p>No tasks available.</p>
-        ) : (
-          <ul style={styles.list}>
-            {tasks.map((task) => (
-              <li key={task.id} style={styles.task}>
-                <span
-                  onClick={() => toggleTask(task.id)}
-                  style={{
-                    ...styles.title,
-                    textDecoration: task.completed
-                      ? "line-through"
-                      : "none",
-                  }}
-                >
-                  {task.title}
-                </span>
-
-                <button onClick={() => deleteTask(task.id)}>
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-    </main>
-  );
 }
 
-const styles = {
-  container: {
-    maxWidth: "800px",
-    margin: "40px auto",
-    padding: "20px",
-    fontFamily: "Arial, sans-serif",
-  },
+// Display tasks dynamically
+function displayTasks() {
+    taskList.innerHTML = "";
 
-  inputArea: {
-    display: "flex",
-    gap: "10px",
-    marginBottom: "30px",
-  },
+    tasks.forEach((task) => {
+        const li = document.createElement("li");
+        li.className = "task-item";
 
-  list: {
-    listStyle: "none",
-    padding: 0,
-  },
+        const title = document.createElement("span");
+        title.className = "task-title";
+        title.textContent = task.title;
 
-  task: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "12px",
-    marginBottom: "10px",
-    border: "1px solid #ddd",
-    borderRadius: "6px",
-  },
+        if (task.completed) {
+            title.style.textDecoration = "line-through";
+        }
 
-  title: {
-    cursor: "pointer",
-    flex: 1,
-  },
-};
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "delete-btn";
+        deleteButton.textContent = "Delete";
 
-export default App;
+        deleteButton.addEventListener("click", () => {
+            deleteTask(task.id);
+        });
+
+        li.appendChild(title);
+        li.appendChild(deleteButton);
+
+        taskList.appendChild(li);
+    });
+}
+
+// Add new task using POST request
+async function addTask() {
+    const title = taskInput.value.trim();
+
+    if (!title) {
+        alert("Please enter a task.");
+        return;
+    }
+
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                title: title,
+                completed: false,
+                userId: 1
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to add task");
+        }
+
+        const newTask = await response.json();
+
+        // JSONPlaceholder returns a simulated ID
+        newTask.id = Date.now();
+
+        tasks.unshift(newTask);
+
+        taskInput.value = "";
+        displayTasks();
+    } catch (error) {
+        console.error(error);
+        alert("Unable to add task.");
+    }
+}
+
+// Delete task from UI
+async function deleteTask(id) {
+    try {
+        await fetch(`${API_URL}/${id}`, {
+            method: "DELETE"
+        });
+
+        tasks = tasks.filter((task) => task.id !== id);
+
+        displayTasks();
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+// Add task button
+addTaskBtn.addEventListener("click", addTask);
+
+// Allow Enter key to add task
+taskInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+        addTask();
+    }
+});
+
+// Load initial data
+loadTasks();
