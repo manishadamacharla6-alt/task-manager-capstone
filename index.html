@@ -4,222 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="description"
-        content="Responsive Task Manager capstone project"
-    >
-
-    <title>Task Manager | Capstone</title>
+    <title>Task Manager</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<header class="site-header">
-    <div class="container header-content">
-        <div>
-            <h1>Task Manager</h1>
-            <p>Manage your work efficiently</p>
-        </div>
+    <header>
+        <h1>Task Manager</h1>
+        <p>Manage your tasks using a REST API</p>
+    </header>
 
-        <button id="logoutBtn" class="secondary-btn" type="button">
-            Logout
-        </button>
-    </div>
-</header>
+    <main>
 
-<main class="container">
-
-    <!-- Login Simulation -->
-    <section id="loginSection" class="card login-card">
-        <h2>Welcome Back</h2>
-        <p>Login to access your task manager.</p>
-
-        <form id="loginForm">
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input
-                    type="text"
-                    id="username"
-                    required
-                    placeholder="Enter your name"
-                >
-            </div>
-
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input
-                    type="password"
-                    id="password"
-                    required
-                    placeholder="Enter password"
-                >
-            </div>
-
-            <button type="submit" class="primary-btn">
-                Login
-            </button>
-        </form>
-
-        <p id="loginMessage" class="message" aria-live="polite"></p>
-    </section>
-
-    <!-- Dashboard -->
-    <section id="dashboardSection" hidden>
-
-        <div class="welcome">
-            <h2>My Tasks</h2>
-            <p id="welcomeText">Welcome!</p>
-        </div>
-
-        <!-- Statistics -->
-        <div class="stats-grid">
-            <article class="stat-card">
-                <h3>Total</h3>
-                <p id="totalTasks">0</p>
-            </article>
-
-            <article class="stat-card">
-                <h3>Pending</h3>
-                <p id="pendingTasks">0</p>
-            </article>
-
-            <article class="stat-card">
-                <h3>Completed</h3>
-                <p id="completedTasks">0</p>
-            </article>
-        </div>
-
-        <!-- Add Task -->
-        <section class="card">
+        <section class="task-form">
             <h2>Add New Task</h2>
 
-            <form id="taskForm">
+            <input
+                type="text"
+                id="taskInput"
+                placeholder="Enter a task"
+            >
 
-                <div class="form-group">
-                    <label for="taskTitle">Task Title</label>
-                    <input
-                        type="text"
-                        id="taskTitle"
-                        required
-                        placeholder="Enter task title"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="taskDescription">Description</label>
-                    <textarea
-                        id="taskDescription"
-                        rows="3"
-                        placeholder="Enter task description"
-                    ></textarea>
-                </div>
-
-                <div class="form-row">
-
-                    <div class="form-group">
-                        <label for="taskCategory">Category</label>
-
-                        <select id="taskCategory">
-                            <option value="Work">Work</option>
-                            <option value="Personal">Personal</option>
-                            <option value="Study">Study</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="taskPriority">Priority</label>
-
-                        <select id="taskPriority">
-                            <option value="Low">Low</option>
-                            <option value="Medium" selected>Medium</option>
-                            <option value="High">High</option>
-                        </select>
-                    </div>
-
-                </div>
-
-                <button type="submit" class="primary-btn">
-                    Add Task
-                </button>
-
-            </form>
+            <button id="addTaskBtn">
+                Add Task
+            </button>
         </section>
 
-        <!-- Search and Filters -->
-        <section class="card">
-            <h2>Find Tasks</h2>
+        <section>
+            <h2>Task List</h2>
 
-            <div class="filters">
+            <p id="loading">Loading tasks...</p>
 
-                <div class="form-group">
-                    <label for="searchInput">Search</label>
-                    <input
-                        type="search"
-                        id="searchInput"
-                        placeholder="Search tasks..."
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="statusFilter">Status</label>
-
-                    <select id="statusFilter">
-                        <option value="All">All</option>
-                        <option value="Pending">Pending</option>
-                        <option value="Completed">Completed</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="categoryFilter">Category</label>
-
-                    <select id="categoryFilter">
-                        <option value="All">All</option>
-                        <option value="Work">Work</option>
-                        <option value="Personal">Personal</option>
-                        <option value="Study">Study</option>
-                    </select>
-                </div>
-
-            </div>
+            <ul id="taskList"></ul>
         </section>
 
-        <!-- Task List -->
-        <section class="card">
-            <div class="section-heading">
-                <h2>Task List</h2>
+    </main>
 
-                <button
-                    id="clearTasksBtn"
-                    type="button"
-                    class="danger-btn"
-                >
-                    Clear All
-                </button>
-            </div>
+    <footer>
+        <p>Task Manager Capstone Project</p>
+    </footer>
 
-            <div
-                id="taskList"
-                class="task-list"
-                aria-live="polite"
-            ></div>
-
-            <p id="emptyMessage" class="empty-message">
-                No tasks found.
-            </p>
-        </section>
-
-    </section>
-
-</main>
-
-<footer>
-    <p>&copy; 2026 Task Manager Capstone</p>
-</footer>
-
-<script src="app.js"></script>
+    <script src="app.js"></script>
 
 </body>
 </html>
